@@ -23,12 +23,12 @@ class LanguageController extends Controller
     // Store a newly created language in storage
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $request->validate([
+            'language_name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
 
-        $language = Language::create($validated);
+        $language = Language::create($request->all());
         return response()->json($language, 201);
     }
 
@@ -49,13 +49,13 @@ class LanguageController extends Controller
     // Update the specified language in storage
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
 
         $language = Language::findOrFail($id);
-        $language->update($validated);
+        $language->update($request->all());
         return response()->json($language);
     }
 

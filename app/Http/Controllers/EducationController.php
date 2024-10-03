@@ -23,12 +23,12 @@ class EducationController extends Controller
     // Store a newly created education in storage
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+         $request->validate([
+            'institution_name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
 
-        $education = Education::create($validated);
+        $education = Education::create($request->all());
         return response()->json($education, 201);
     }
 
@@ -49,13 +49,13 @@ class EducationController extends Controller
     // Update the specified education in storage
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+         $request->validate([
+            'institution_name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
 
         $education = Education::findOrFail($id);
-        $education->update($validated);
+        $education->update($request->all());
         return response()->json($education);
     }
 

@@ -2,10 +2,10 @@ import React, { useState , useEffect} from 'react';
 
 import axios from 'axios';
 const apiUrl = process.env.REACT_APP_API_URL;
-
-const Step1 = ({ nextStep }) => {
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); 
+const url = 'user-information';
+const Step1 = ({ SendData,loading,error}) => {
+  // const [error, setError] = useState('');
+  // const [loading, setLoading] = useState(false); 
   const [formData, setFormData] = useState({
     full_name: '',
     phone_number: '',
@@ -66,33 +66,33 @@ const Step1 = ({ nextStep }) => {
     }
   }, [formData.user_id]); // Runs when user_id changes
 
-   const SendData  = async () =>{
-    try {
-        const response = await axios.post(`${apiUrl}/user-information`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+  //  const SendData  = async () =>{
+  //   try {
+  //       const response = await axios.post(`${apiUrl}/user-information`, formData, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       });
     
-        if (response.status === 201) {
-             console.log('done')
-            nextStep()
-        } else {
-          setError(response.data.message || 'An error occurred ,Please try again.');
-        }
+  //       if (response.status === 201) {
+  //            console.log('done')
+  //           nextStep()
+  //       } else {
+  //         setError(response.data.message || 'An error occurred ,Please try again.');
+  //       }
     
-      } catch (error) {
-        if (error.response) {
-          setError(error.response.data.message || 'An error occurred. Please try again.');
-        } else if (error.request) {
-          setError('No response from server. Please try again.');
-        } else {
-          setError('An error occurred. Please try again.');
-        }
-      } finally {
-        setLoading(false); 
-      }
-  }
+  //     } catch (error) {
+  //       if (error.response) {
+  //         setError(error.response.data.message || 'An error occurred. Please try again.');
+  //       } else if (error.request) {
+  //         setError('No response from server. Please try again.');
+  //       } else {
+  //         setError('An error occurred. Please try again.');
+  //       }
+  //     } finally {
+  //       setLoading(false); 
+  //     }
+  // }
   // Handler to update form data
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -226,7 +226,7 @@ const Step1 = ({ nextStep }) => {
         />
       </label>
 
-      <button onClick={SendData} disabled={loading} > {loading ? 'Next...' : 'Next'}</button>
+      <button onClick={() => {SendData(formData,url)}} disabled={loading} > {loading ? 'Next...' : 'Next'}</button>
     </div>
   );
 };

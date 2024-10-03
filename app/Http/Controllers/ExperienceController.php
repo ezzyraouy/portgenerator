@@ -23,12 +23,12 @@ class ExperienceController extends Controller
     // Store a newly created experience in storage
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $request->validate([
+            'company_name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
 
-        $experience = Experience::create($validated);
+        $experience = Experience::create($request->all());
         return response()->json($experience, 201);
     }
 
@@ -49,13 +49,13 @@ class ExperienceController extends Controller
     // Update the specified experience in storage
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $request->validate([
+            'company_name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
 
         $experience = Experience::findOrFail($id);
-        $experience->update($validated);
+        $experience->update($request->all());
         return response()->json($experience);
     }
 
