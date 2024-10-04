@@ -94,12 +94,15 @@ const Step2 = ({ SendData,loading,error}) => {
       [name]: type === 'checkbox' ? (checked ? 1 : 0 ) : value,
     }));
   };
-
+  function AddForm() {
+    let education = document.getElementById('education')
+    education.append('<h2>Test</h2>');
+  }
   return (
-    <div>
+    <div className="Education" id='education'>
       {error && <div className="alert alert-danger">{error}</div>}
       <h2>Step 2: Education Details</h2>
-
+     
       <label>
         Institution Name
         <input
@@ -177,7 +180,7 @@ const Step2 = ({ SendData,loading,error}) => {
           onChange={handleChange}
         />
       </label>
-
+      <p onClick={AddForm}>ADD</p>
       <button onClick={() => {SendData(formData,url)}} disabled={loading}>
         {loading ? 'Next...' : 'Next'}
       </button>

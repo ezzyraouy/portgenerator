@@ -24,7 +24,7 @@ class ExperienceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'company_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255|unique',
             'user_id' => 'required|integer',
         ]);
 
@@ -53,7 +53,7 @@ class ExperienceController extends Controller
             'company_name' => 'required|string|max:255',
             'user_id' => 'required|integer',
         ]);
-
+        
         $experience = Experience::findOrFail($id);
         $experience->update($request->all());
         return response()->json($experience);
