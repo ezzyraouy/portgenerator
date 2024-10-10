@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'; // Import useLocation to detect 
 import AppRouter from './Router';
 import Login from './components/login';
 // import Signup from './components/Singup'; // Import the Signup component
-
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const location = useLocation(); // Get the current location

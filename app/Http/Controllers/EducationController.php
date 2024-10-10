@@ -23,27 +23,36 @@ class EducationController extends Controller
     // Store a newly created education in storage
     public function store(Request $request)
     {
-         $request->validate([
-            'institution_name' => 'required|string|max:255',
-            'user_id' => 'required|integer',
+        $request->validate([
+            '*.institution_name' => 'required|string|max:255',
+            '*.user_id' => 'required|integer',
+            // Add additional validation rules as needed
         ]);
-
-        $education = Education::create($request->all());
-        return response()->json($education, 201);
+    
+        // Initialize an array to hold created education entries
+        $createdEducations = [];
+    
+        // Loop through each education entry
+        foreach ($request->all() as $input) {
+            $education = Education::create($input);
+            $createdEducations[] = $education; 
+        }
+    
+        return response()->json($createdEducations, 201);
     }
 
     // Display the specified education
     public function show($id)
     {
-        $education = Education::findOrFail($id);
+        $education = Education::where('user_id',$id)->get();
         return response()->json($education);
     }
 
     // Show the form for editing the specified education
     public function edit($id)
     {
-        $education = Education::findOrFail($id);
-        return view('educations.edit', compact('education'));
+        $education = Education::where('user_id',$id)->get();
+        return response()->json($education);
     }
 
     // Update the specified education in storage
