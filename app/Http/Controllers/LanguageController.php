@@ -21,29 +21,47 @@ class LanguageController extends Controller
     }
 
     // Store a newly created language in storage
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'language_name' => 'required|string|max:255',
+    //         'user_id' => 'required|integer',
+    //     ]);
+
+    //     $language = Language::create($request->all());
+    //     return response()->json($language, 201);
+    // }
     public function store(Request $request)
     {
         $request->validate([
-            'language_name' => 'required|string|max:255',
-            'user_id' => 'required|integer',
+            '*.language_name' => 'required|string|max:255',
+            '*.user_id' => 'required|integer',
         ]);
-
-        $language = Language::create($request->all());
-        return response()->json($language, 201);
+    
+        // Initialize an array to hold created education entries
+        $createdLanguage = [];
+    
+        // Loop through each education entry
+        foreach ($request->all() as $input) {
+            $language = Language::create($input);
+            $createdLanguage[] = $language; 
+        }
+    
+        return response()->json($createdLanguage, 201);
     }
 
     // Display the specified language
     public function show($id)
     {
-        $language = Language::findOrFail($id);
+        $language = Language::where('user_id',$id)->get();
         return response()->json($language);
     }
 
     // Show the form for editing the specified language
     public function edit($id)
     {
-        $language = Language::findOrFail($id);
-        return view('languages.edit', compact('language'));
+        $language = Language::where('user_id',$id)->get();
+        return response()->json($language);
     }
 
     // Update the specified language in storage

@@ -24,30 +24,49 @@ class ProjectController extends Controller
     }
 
     // Store a newly created project in storage
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'title_fr' => 'required|string|max:255',
+    //         'title_en' => 'required|string|max:255',
+    //         'user_id' => 'required|integer',
+    //     ]);
+
+    //     $project = Project::create($request->all());
+    //     return response()->json($project, 201);
+    // }
     public function store(Request $request)
     {
         $request->validate([
-            'title_fr' => 'required|string|max:255',
-            'title_en' => 'required|string|max:255',
-            'user_id' => 'required|integer',
+            '*.title_fr' => 'required|string|max:255',
+            '*.title_en' => 'required|string|max:255',
+            '*.user_id' => 'required|integer',
         ]);
-
-        $project = Project::create($request->all());
-        return response()->json($project, 201);
+    
+        // Initialize an array to hold created education entries
+        $createdProject = [];
+    
+        // Loop through each education entry
+        foreach ($request->all() as $input) {
+            $project = Project::create($input);
+            $createdProject[] = $project; 
+        }
+    
+        return response()->json($createdProject, 201);
     }
 
     // Display the specified project
     public function show($id)
     {
-        $project = Project::findOrFail($id);
+        $project = Project::where('user_id',$id)->get();
         return response()->json($project);
     }
 
     // Show the form for editing the specified project
     public function edit($id)
     {
-        $project = Project::findOrFail($id);
-        return view('projects.edit', compact('project'));
+        $project = Project::where('user_id',$id)->get();
+        return response()->json($project);
     }
 
     // Update the specified project in storage

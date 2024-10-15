@@ -21,29 +21,47 @@ class ExperienceController extends Controller
     }
 
     // Store a newly created experience in storage
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'company_name' => 'required|string|max:255|unique',
+    //         'user_id' => 'required|integer',
+    //     ]);
+
+    //     $experience = Experience::create($request->all());
+    //     return response()->json($experience, 201);
+    // }
     public function store(Request $request)
     {
         $request->validate([
-            'company_name' => 'required|string|max:255|unique',
-            'user_id' => 'required|integer',
+            '*.company_name' => 'required|string|max:255',
+            '*.user_id' => 'required|integer',
         ]);
-
-        $experience = Experience::create($request->all());
-        return response()->json($experience, 201);
+    
+        // Initialize an array to hold created education entries
+        $createdExperience = [];
+    
+        // Loop through each education entry
+        foreach ($request->all() as $input) {
+            $experience = Experience::create($input);
+            $createdExperience[] = $experience; 
+        }
+    
+        return response()->json($createdExperience, 201);
     }
 
     // Display the specified experience
     public function show($id)
     {
-        $experience = Experience::findOrFail($id);
+        $experience = Experience::where('user_id',$id)->get();
         return response()->json($experience);
     }
 
     // Show the form for editing the specified experience
     public function edit($id)
     {
-        $experience = Experience::findOrFail($id);
-        return view('experiences.edit', compact('experience'));
+        $experience = Experience::where('user_id',$id)->get();
+        return response()->json($experience);
     }
 
     // Update the specified experience in storage

@@ -3,43 +3,45 @@ import axios from 'axios';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const url = 'languages';
-const Step5 = ({ SendData,loading,error}) => {
-  // const [error, setError] = useState('');
-  // const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+
+const Step5 = ({ SendData, loading, error }) => {
+  const initialLanguage = {
     language_name: '',
     proficiency_level: '',
     certification: '',
     years_of_experience: '',
-    is_primary: false,
+    is_primary: 0,
     description_fr: '',
     description_en: '',
     user_id: sessionStorage.getItem("id"),
-  });
+  };
 
-  // Function to fetch language info
+  // State to hold multiple language entries
+  const [languages, setLanguages] = useState([initialLanguage]);
+
+  // Function to fetch languages info for the user
   async function GetLanguageInfo() {
     try {
-      const response = await axios.get(`${apiUrl}/languages/${formData.user_id}`, {
+      const response = await axios.get(`${apiUrl}/languages/${initialLanguage.user_id}`, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 200) {
-        const languageInfo = response.data;
+        const fetchedLanguages = response.data;
 
-        // Update formData with the fetched language information
-        setFormData((prevData) => ({
-          ...prevData,
-          language_name: languageInfo.language_name || '',
-          proficiency_level: languageInfo.proficiency_level || '',
-          certification: languageInfo.certification || '',
-          years_of_experience: languageInfo.years_of_experience || '',
-          is_primary: languageInfo.is_primary || false,
-          description_fr: languageInfo.description_fr || '',
-          description_en: languageInfo.description_en || '',
-        }));
+        // If language information is found, update the state
+        setLanguages(fetchedLanguages.map(language => ({
+          language_name: language.language_name || '',
+          proficiency_level: language.proficiency_level || '',
+          certification: language.certification || '',
+          years_of_experience: language.years_of_experience || '',
+          is_primary: language.is_primary || false,
+          description_fr: language.description_fr || '',
+          description_en: language.description_en || '',
+          user_id: sessionStorage.getItem("id"),
+        })));
       } else {
         console.log('Language information not found');
       }
@@ -48,47 +50,34 @@ const Step5 = ({ SendData,loading,error}) => {
     }
   }
 
-  // useEffect to call GetLanguageInfo when the component mounts
+  // Fetch data when the component mounts
   useEffect(() => {
-    if (formData.user_id) {
-      GetLanguageInfo(); // Only call if user_id is set
+    if (initialLanguage.user_id) {
+      GetLanguageInfo();
     }
-  }, [formData.user_id]); // Runs when user_id changes
+  }, [initialLanguage.user_id]);
 
-  // const SendData = async () => {
-  //   try {
-  //     const response = await axios.post(`${apiUrl}/languages`, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     });
-
-  //     if (response.status === 201) {
-  //       console.log('Language information saved');
-  //       nextStep();
-  //     } else {
-  //       setError(response.data.message || 'An error occurred. Please try again.');
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       setError(error.response.data.message || 'An error occurred. Please try again.');
-  //     } else if (error.request) {
-  //       setError('No response from server. Please try again.');
-  //     } else {
-  //       setError('An error occurred. Please try again.');
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // Handler to update form data
-  const handleChange = (e) => {
+  // Handler to update form data for a specific language entry
+  const handleChange = (index, e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? (checked ? 1: 0) : value,
-    }));
+    const updatedLanguages = [...languages];
+    updatedLanguages[index] = {
+      ...updatedLanguages[index],
+      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value,
+    };
+    setLanguages(updatedLanguages);
+  };
+
+  // Function to add a new language entry
+  const addLanguage = () => {
+    setLanguages([...languages, initialLanguage]);
+  };
+
+  // Function to remove a language entry
+  const removeLanguage = (index) => {
+    const updatedLanguages = [...languages];
+    updatedLanguages.splice(index, 1);
+    setLanguages(updatedLanguages);
   };
 
   return (
@@ -96,75 +85,87 @@ const Step5 = ({ SendData,loading,error}) => {
       {error && <div className="alert alert-danger">{error}</div>}
       <h2>Step 5: Language Details</h2>
 
-      <label>
-        Language Name
-        <input
-          type="text"
-          name="language_name"
-          value={formData.language_name}
-          onChange={handleChange}
-        />
-      </label>
+      {languages.map((language, index) => (
+        <div key={index} style={{ marginBottom: '20px' }}>
+          <label>
+            Language Name
+            <input
+              type="text"
+              name="language_name"
+              value={language.language_name}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <label>
-        Proficiency Level
-        <input
-          type="text"
-          name="proficiency_level"
-          value={formData.proficiency_level}
-          onChange={handleChange}
-        />
-      </label>
+          <label>
+            Proficiency Level
+            <input
+              type="text"
+              name="proficiency_level"
+              value={language.proficiency_level}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <label>
-        Certification
-        <input
-          type="text"
-          name="certification"
-          value={formData.certification}
-          onChange={handleChange}
-        />
-      </label>
+          <label>
+            Certification
+            <input
+              type="text"
+              name="certification"
+              value={language.certification}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <label>
-        Years of Experience
-        <input
-          type="number"
-          name="years_of_experience"
-          value={formData.years_of_experience}
-          onChange={handleChange}
-        />
-      </label>
+          <label>
+            Years of Experience
+            <input
+              type="number"
+              name="years_of_experience"
+              value={language.years_of_experience}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <label>
-        Primary Language
-        <input
-          type="checkbox"
-          name="is_primary"
-          checked={formData.is_primary}
-          onChange={handleChange}
-        />
-      </label>
+          <label>
+            Primary Language
+            <input
+              type="checkbox"
+              name="is_primary"
+              checked={language.is_primary}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <label>
-        Description (FR)
-        <textarea
-          name="description_fr"
-          value={formData.description_fr}
-          onChange={handleChange}
-        />
-      </label>
+          <label>
+            Description (FR)
+            <textarea
+              name="description_fr"
+              value={language.description_fr}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <label>
-        Description (EN)
-        <textarea
-          name="description_en"
-          value={formData.description_en}
-          onChange={handleChange}
-        />
-      </label>
+          <label>
+            Description (EN)
+            <textarea
+              name="description_en"
+              value={language.description_en}
+              onChange={(e) => handleChange(index, e)}
+            />
+          </label>
 
-      <button onClick={() => {SendData(formData,url)}} disabled={loading}>
+          <button type="button" onClick={() => removeLanguage(index)} disabled={languages.length === 1}>
+            Remove Language
+          </button>
+
+          <hr />
+        </div>
+      ))}
+
+      <button type="button" onClick={addLanguage}>Add Another Language</button>
+
+      <button onClick={() => { SendData(languages, url) }} disabled={loading}>
         {loading ? 'Next...' : 'Next'}
       </button>
     </div>
